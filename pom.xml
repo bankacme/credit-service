@@ -27,6 +27,8 @@
         <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
         <checkstyle.version>10.21.0</checkstyle.version>
         <jacoco.version>0.8.13</jacoco.version>
+        <resilience4j.version>2.3.0</resilience4j.version>
+        <wiremock.version>3.9.2</wiremock.version>
         <base.package>com.bank.credit</base.package>
     </properties>
 
@@ -53,6 +55,18 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <!-- Outbound REST calls (R7) to customer-service and transaction-service, with circuit breaker -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>${resilience4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-reactor</artifactId>
+            <version>${resilience4j.version}</version>
         </dependency>
 
         <!-- RxJava 3: return types of the ports -->
@@ -85,10 +99,27 @@
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- R7: stands in for customer-service and transaction-service in the client tests -->
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Must be imported BEFORE spring-cloud-dependencies: otherwise Spring Cloud's own BOM
+                 overrides some transitive Resilience4j versions and the context fails to start (same
+                 ordering, and same reason, as account-service and transaction-service). -->
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-bom</artifactId>
+                <version>${resilience4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
