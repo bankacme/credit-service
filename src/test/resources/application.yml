@@ -1,0 +1,7 @@
+# Replaces src/main/resources/application.yml during the tests: no Config Server needed.
+spring:
+  application:
+    name: credit-service
+  cloud:
+    config:
+      enabled: false
