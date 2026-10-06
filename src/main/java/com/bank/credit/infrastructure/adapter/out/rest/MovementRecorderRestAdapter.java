@@ -16,6 +16,7 @@ import io.reactivex.rxjava3.core.Completable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -36,7 +37,7 @@ public class MovementRecorderRestAdapter implements MovementRecorderPort {
     private final CircuitBreaker circuitBreaker;
     private final TimeLimiter timeLimiter;
 
-    public MovementRecorderRestAdapter(WebClient.Builder builder,
+    public MovementRecorderRestAdapter(@LoadBalanced WebClient.Builder builder,
                                        @Value("${bank.clients.transaction-service.base-url}") String baseUrl,
                                        CircuitBreakerRegistry circuitBreakerRegistry,
                                        TimeLimiterRegistry timeLimiterRegistry) {
